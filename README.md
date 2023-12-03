@@ -9,6 +9,14 @@ Food Images (Food-101): https://data.vision.ee.ethz.ch/cvl/datasets_extra/food-1
 
 Intel Image Classification: https://www.kaggle.com/datasets/puneet6060/intel-image-classification/data
 
+# Download the weights of the trained network
+Cat and Dog: 
+
+Food Images (Food-101): https://drive.google.com/file/d/1MUNP94VsOiKPIC3Gdt09loM_1RDOQTxz/view?usp=sharing
+
+Intel Image Classification: https://drive.google.com/file/d/1t1HPU6Zq6g39dTxj4015MUAnnhJ6qHfB/view?usp=sharing
+
+
 # Results:
 
 ### Cat and Dog
