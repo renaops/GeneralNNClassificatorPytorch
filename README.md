@@ -15,12 +15,3 @@ Cat and Dog: https://drive.google.com/file/d/1n4_FN2VCA_OSZ-48i9vu8H9lkQguRcDa/v
 Food Images (Food-101): https://drive.google.com/file/d/1MUNP94VsOiKPIC3Gdt09loM_1RDOQTxz/view?usp=sharing
 
 Intel Image Classification: https://drive.google.com/file/d/1t1HPU6Zq6g39dTxj4015MUAnnhJ6qHfB/view?usp=sharing
-
-
-# Results:
-
-### Cat and Dog
-
-### Food Images (Food-101)
-
-### Intel Image Classification
