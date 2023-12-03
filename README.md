@@ -1,5 +1,5 @@
 # GeneralNNClassificatorPytorch
-A neural network for classifying image data of natural scenes from around the world
+The project involves the implementation of a Convolutional Neural Network (CNN) using the PyTorch library, with the central goal of providing a generic and flexible solution for any image dataset. The CNN architecture is designed to be easily adaptable to different domains and specific characteristics of datasets, enabling a wide range of applications. The code is structured in a modular way, facilitating the customization of hyperparameters, network architecture, and loss function. This approach aims to provide a versatile tool for researchers and developers seeking an efficient and adaptable solution for computer vision tasks in various image contexts and domains.
 
 
 # Datasets
