@@ -11,8 +11,8 @@ Intel Image Classification: https://www.kaggle.com/datasets/puneet6060/intel-ima
 
 # Results:
 
-## Cat and Dog
+### Cat and Dog
 
-## Food Images (Food-101)
+### Food Images (Food-101)
 
-## Intel Image Classification
+### Intel Image Classification
