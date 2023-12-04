@@ -1,3 +1,9 @@
+import time
+import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 class GenericClassificationNet(nn.Module):
     """
     Convolutional Neural Network (CNN) for environmental classification.
@@ -105,6 +111,9 @@ def calc_val_loss(model, dataloader, loss_function):
     >>> print(val_loss)
     0.1234
     """
+
+    USING_CUDA = torch.cuda.is_available()
+
     with torch.no_grad():
         total_loss = 0.0
         for batch in dataloader:
@@ -146,6 +155,8 @@ def optimize(model, train_loader, val_loader, loss_func, optimizer, num_epochs, 
     >>> optimizer = torch.optim.Adam(net.parameters(), lr=0.001)
     >>> train_losses, val_losses = optimize(net, train_dataloader, val_dataloader, criterion, optimizer, num_epochs=10, output_path='model.pth')
     """
+    USING_CUDA = torch.cuda.is_available()
+    
     train_losses = []
     val_losses = []
 
