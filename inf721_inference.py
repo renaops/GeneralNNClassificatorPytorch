@@ -1,7 +1,9 @@
 import torch
 import argparse
+from inf721_model import GenericClassificationNet
 from inf721_helpers import custom_transforms
 from PIL import Image
+
 
 def load_class_labels(class_labels_file):
     """
@@ -17,6 +19,7 @@ def load_class_labels(class_labels_file):
         class_labels = [line.strip() for line in file.readlines()]
     return class_labels
 
+
 def load_image(image_path):
     """
     Load and preprocess the input image.
@@ -27,10 +30,12 @@ def load_image(image_path):
     Returns:
         torch.Tensor: Preprocessed input image as a PyTorch tensor.
     """
-    image = Image.open(image_path).convert('RGB')
-    input_tensor = custom_transforms(image)
+    transf = custom_transforms()
+    input_tensor = transf(Image.open(image_path).convert('RGB'))
+
     input_batch = input_tensor.unsqueeze(0)  # Add batch dimension
     return input_batch
+
 
 def predict_image(model, image_path, class_labels):
     """
@@ -46,10 +51,10 @@ def predict_image(model, image_path, class_labels):
     """
     input_batch = load_image(image_path)
 
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
-    input_batch = input_batch.to(device)
+    device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
+    if device == 'cuda':
+        model.cuda()
+        input_batch.to(device)
 
     model.eval()
 
@@ -63,24 +68,29 @@ def predict_image(model, image_path, class_labels):
 
     return predicted_label
 
+
 def main():
     """
     Main function to perform image classification using a trained model.
     """
-    parser = argparse.ArgumentParser(description='Image Classification Inference Script')
-    parser.add_argument('image_path', type=str, help='Path to the input image')
-    parser.add_argument('model_path', type=str, help='Path to the trained model file')
-    parser.add_argument('--class_labels_file', type=str, default='class_labels.txt',
+    parser = argparse.ArgumentParser(
+        description='Image Classification Inference Script')
+    parser.add_argument('--IMAGE_PATH', type=str, help='Path to the input image')
+    parser.add_argument('--MODEL_PATH', type=str,
+                        help='Path to the trained model file')
+    parser.add_argument('--CLASS_LABELS_FILE', type=str, default='class_labels.txt',
                         help='Path to the text file containing class labels (default: class_labels.txt)')
     args = parser.parse_args()
 
-    class_labels = load_class_labels(args.class_labels_file)
+    class_labels = load_class_labels(args.CLASS_LABELS_FILE)
 
-    model = torch.load(args.model_path, map_location=torch.device('cpu'))
+    model = GenericClassificationNet(len(class_labels))
+    model.load_state_dict(torch.load(args.MODEL_PATH))
 
-    prediction = predict_image(model, args.image_path, class_labels)
+    prediction = predict_image(model, args.IMAGE_PATH, class_labels)
 
     print(f'The predicted class is: {prediction}')
+
 
 if __name__ == '__main__':
     main()

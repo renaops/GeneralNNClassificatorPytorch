@@ -4,6 +4,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from inf721_helpers import format_time
+
+
 class GenericClassificationNet(nn.Module):
     """
     Convolutional Neural Network (CNN) for environmental classification.
@@ -90,7 +93,8 @@ class GenericClassificationNet(nn.Module):
         x = self.out(x)
 
         return x
-    
+
+
 def calc_val_loss(model, dataloader, loss_function):
     """
     Calculate the average validation loss for a given model, dataloader, and loss function.
@@ -131,6 +135,7 @@ def calc_val_loss(model, dataloader, loss_function):
 
     return average_loss
 
+
 def optimize(model, train_loader, val_loader, loss_func, optimizer, num_epochs, output_path):
     """
     Train and optimize a neural network model.
@@ -156,7 +161,7 @@ def optimize(model, train_loader, val_loader, loss_func, optimizer, num_epochs, 
     >>> train_losses, val_losses = optimize(net, train_dataloader, val_dataloader, criterion, optimizer, num_epochs=10, output_path='model.pth')
     """
     USING_CUDA = torch.cuda.is_available()
-    
+
     train_losses = []
     val_losses = []
 
@@ -185,13 +190,16 @@ def optimize(model, train_loader, val_loader, loss_func, optimizer, num_epochs, 
             total_time += iteration_time
 
             completion_percentage = (i + 1) / len(train_loader) * 100
-            formatted_completion_percentage = math.floor(completion_percentage / 3.333)
+            formatted_completion_percentage = math.floor(
+                completion_percentage / 3.333)
 
-            print(f'\r{i+1}/{len(train_loader)} [{"="*(formatted_completion_percentage)}{"."*(30 - formatted_completion_percentage)}] - {format_time(iteration_time)}/step - Loss: {loss:.6f}', end='', flush=True)
+            print(
+                f'\r{i+1}/{len(train_loader)} [{"="*(formatted_completion_percentage)}{"."*(30 - formatted_completion_percentage)}] - {format_time(iteration_time)}/step - Loss: {loss:.6f}', end='', flush=True)
 
         train_losses.append(total_loss / len(train_loader))
         val_losses.append(calc_val_loss(model, val_loader, loss_func))
-        print(f" || Train Loss:{train_losses[-1]:.6f} - Val Loss:{val_losses[-1]:.6f}")
+        print(
+            f" || Train Loss:{train_losses[-1]:.6f} - Val Loss:{val_losses[-1]:.6f}")
 
     print('\nComplete! =)')
     torch.save(model.state_dict(), output_path)

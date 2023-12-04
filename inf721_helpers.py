@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import torch
 from torchvision.transforms import v2 as transforms_v2
 
+
 def get_content_from_partition(partition, data_path):
     """
     Retrieve a list of dictionaries containing information about images in a specified partition.
@@ -29,9 +30,11 @@ def get_content_from_partition(partition, data_path):
     for clazz in os.listdir(os.path.join(data_path, partition)):
         for img in os.listdir(os.path.join(data_path, partition, clazz)):
             if img.endswith('.jpg') or img.endswith('.png'):
-                partition_data.append({'class': clazz, 'img': os.path.join(data_path, partition, clazz, img)})
+                partition_data.append(
+                    {'class': clazz, 'img': os.path.join(data_path, partition, clazz, img)})
 
     return partition_data
+
 
 def plot_learning_curve(train_losses, val_losses, num_epochs, size=(8, 5)):
     """
@@ -52,8 +55,10 @@ def plot_learning_curve(train_losses, val_losses, num_epochs, size=(8, 5)):
     >>> plot_learning_curve(train_loss, val_loss, num_epochs=4)
     """
     plt.figure(figsize=size)
-    plt.plot(range(1, num_epochs + 1), train_losses, marker='o', linestyle='-', color='#ff5a7d', label='Training Loss')
-    plt.plot(range(1, num_epochs + 1), val_losses, marker='x', linestyle='-', color='#ff9e00', label='Validation Loss')
+    plt.plot(range(1, num_epochs + 1), train_losses, marker='o',
+             linestyle='-', color='#ff5a7d', label='Training Loss')
+    plt.plot(range(1, num_epochs + 1), val_losses, marker='x',
+             linestyle='-', color='#ff9e00', label='Validation Loss')
 
     plt.title('Learning Curve')
     plt.xlabel('Epochs')
@@ -80,11 +85,13 @@ def plot_confusion_matrix(conf_matrix, class_labels, title):
     >>> plot_confusion_matrix(confusion_matrix, class_labels, title='Model Performance')
     """
     plt.figure(figsize=(8, 6))
-    sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", yticklabels=class_labels, xticklabels=class_labels)
+    sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues",
+                yticklabels=class_labels, xticklabels=class_labels)
     plt.title(f'Confusion Matrix {title}')
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
     plt.show()
+
 
 def plot_class_distribution(dataframe, column_name, title):
     """
@@ -105,13 +112,14 @@ def plot_class_distribution(dataframe, column_name, title):
     >>> df = pd.DataFrame(data)
     >>> plot_class_distribution(df, 'Class', title='Class Distribution')
     """
-    sns.countplot(x=column_name, data=dataframe, order=sorted(dataframe[column_name].unique()))
+    sns.countplot(x=column_name, data=dataframe,
+                  order=sorted(dataframe[column_name].unique()))
     plt.title(f'{title} Distribution')
     plt.xticks(rotation=45)
     plt.show()
 
 
-def custom_transforms(new_size=(224,224), is_training=False):
+def custom_transforms(new_size=(224, 224), is_training=False):
     """
     Returns a composed set of image transformations using torchvision.transforms.
 
@@ -129,7 +137,8 @@ def custom_transforms(new_size=(224,224), is_training=False):
     >>> img_transformed = transform(img)
     """
 
-    layers = [transforms_v2.ToDtype(torch.float32, scale=True),
+    layers = [transforms_v2.ToImage(),
+              transforms_v2.ToDtype(torch.float32, scale=True),
               transforms_v2.Resize(size=new_size, antialias=True)]
 
     if is_training:
@@ -137,6 +146,7 @@ def custom_transforms(new_size=(224,224), is_training=False):
         layers.append(transforms_v2.RandomHorizontalFlip(p=0.5))
 
     return transforms_v2.Compose(layers)
+
 
 def format_time(seconds):
     if seconds < 60:

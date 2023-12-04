@@ -31,55 +31,69 @@ def main():
         python script_name.py --BATCH_SIZE 256 --NUM_EPOCHS 100 --NUM_CLASSES 10 --MODEL_SAVE_PATH './models/' --MODEL_NAME 'my_model' --DATASET_NAME 'food-101'
     """
 
-    parser = argparse.ArgumentParser(description='Script with command line arguments')
-    
-    parser.add_argument('--BATCH_SIZE', type=int, default=170, help='Batch size for training')
-    parser.add_argument('--NUM_EPOCHS', type=int, default=50, help='Number of epochs for training')
-    parser.add_argument('--NUM_CLASSES', type=int, help='Number of classes in the dataset')
-    parser.add_argument('--MODEL_SAVE_PATH', default='./', help='Path to save the trained model')
-    parser.add_argument('--MODEL_NAME', default='fodo-101_classification', help='Name of the model')
+    parser = argparse.ArgumentParser(
+        description='Script with command line arguments')
+
+    parser.add_argument('--BATCH_SIZE', type=int,
+                        default=32, help='Batch size for training')
+    parser.add_argument('--NUM_EPOCHS', type=int, default=50,
+                        help='Number of epochs for training')
+    parser.add_argument('--MODEL_SAVE_PATH', default='./',
+                        help='Path to save the trained model')
+    parser.add_argument(
+        '--MODEL_NAME', default='model', help='Name of the model')
     parser.add_argument('--DATASET_NAME', help='Name of the dataset')
-    parser.add_argument('--DATASET_PATH', help='Path of the dataset')
+    parser.add_argument('--DATASET_PATH', default='./data', help='Path of the dataset')
+    parser.add_argument('--CLASS_FILE', default='./class_labels.txt', help='Path of the dataset')
 
     args = parser.parse_args()
 
     BATCH_SIZE = args.BATCH_SIZE
     NUM_EPOCHS = args.NUM_EPOCHS
-    NUM_CLASSES = args.NUM_CLASSES
     MODEL_SAVE_PATH = args.MODEL_SAVE_PATH
     MODEL_NAME = args.MODEL_NAME
     DATASET_NAME = args.DATASET_NAME
     DATASET_PATH = args.DATASET_PATH
+    CLASS_FILE = args.CLASS_FILE
 
     torch.manual_seed(1)
     USING_CUDA = torch.cuda.is_available()
     f'Pytorch {"" if USING_CUDA else "não "}está usando o CUDA!'
 
     train_df = pd.DataFrame(get_content_from_partition('train', DATASET_PATH))
-    val_df = pd.DataFrame(get_content_from_partition('validation', DATASET_PATH))
+    val_df = pd.DataFrame(
+        get_content_from_partition('validation', DATASET_PATH))
     test_df = pd.DataFrame(get_content_from_partition('test', DATASET_PATH))
 
-    print(f'> Train size: {len(train_df)}\n> Val size: {len(val_df)}\n> Test size: {len(test_df)}')
+    print(
+        f'> Train size: {len(train_df)}\n> Val size: {len(val_df)}\n> Test size: {len(test_df)}')
 
-    train_dataset = GenericDataset(train_df, transform=custom_transforms(is_training=True))
+    train_dataset = GenericDataset(
+        train_df, transform=custom_transforms(is_training=True))
     val_dataset = GenericDataset(val_df, transform=custom_transforms())
-    test_dataset = GenericDataset(test_df, transform=custom_transforms())
+
+    with open(CLASS_FILE, 'w') as file:
+        file.write('\n'.join(train_dataset.class_names))
 
     workers = os.cpu_count()
     print(f"Thread workers: {workers}")
 
-    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=workers)
-    val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=workers)
+    train_loader = DataLoader(
+        train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=workers)
+    val_loader = DataLoader(
+        val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=workers)
 
-    model = GenericClassificationNet(NUM_CLASSES)
+    model = GenericClassificationNet(len(train_dataset.class_names))
 
     if USING_CUDA:
         model.cuda()
 
     loss_func = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
-    train_losses, val_losses = optimize(model, train_loader, val_loader, loss_func, optimizer, NUM_EPOCHS, os.path.join(MODEL_SAVE_PATH, MODEL_NAME + '.pth'))
+    train_losses, val_losses = optimize(model, train_loader, val_loader, loss_func,
+                                        optimizer, NUM_EPOCHS, os.path.join(MODEL_SAVE_PATH, MODEL_NAME + '.pth'))
     plot_learning_curve(train_losses, val_losses, NUM_EPOCHS)
+
 
 if __name__ == "__main__":
     main()

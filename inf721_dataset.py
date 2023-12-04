@@ -1,6 +1,7 @@
 from torchvision.io import read_image
 from torch.utils.data import Dataset
 
+
 class GenericDataset(Dataset):
     """
     A custom PyTorch dataset for working with image data in environments.
